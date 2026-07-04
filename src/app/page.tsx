@@ -60,6 +60,13 @@ const NAV = [
   { label: "FAQ", href: "#faq" },
 ];
 
+const mintHref = process.env.NEXT_PUBLIC_MINT_URL || "#mint";
+const socialLinks = {
+  twitter: process.env.NEXT_PUBLIC_SOCIAL_TWITTER_URL || "#",
+  discord: process.env.NEXT_PUBLIC_SOCIAL_DISCORD_URL || "#",
+  opensea: process.env.NEXT_PUBLIC_SOCIAL_OPENSEA_URL || "#",
+};
+
 const GALLERY = [
   { src: robinhood, name: "#2221", tag: "MOSS" },
   { src: Sword, name: "#208", tag: "SUN" },
@@ -113,11 +120,27 @@ export default function Home() {
 }
 
 
-function IconLink({ children, label }: { children: React.ReactNode; label: string }) {
+function IconLink({ children, label, href }: { children: React.ReactNode; label: string; href?: string }) {
+  const className = "size-10 grid place-items-center rounded-md text-foreground/80 hover:text-primary hover:bg-primary/10 transition-colors";
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={label}
+        className={className}
+      >
+        {children}
+      </a>
+    );
+  }
+
   return (
     <button
       aria-label={label}
-      className="size-10 grid place-items-center rounded-md text-foreground/80 hover:text-primary hover:bg-primary/10 transition-colors"
+      className={className}
     >
       {children}
     </button>
@@ -239,13 +262,15 @@ function Hero() {
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-start">
               <a
-                href="#mint"
+                href={mintHref}
                 className="inline-flex min-w-[180px] items-center justify-center gap-2 px-5 py-3 font-display text-sm tracking-widest bg-primary text-primary-foreground rounded-md border-2 border-ink shadow-[5px_5px_0_0_#007017] hover:-translate-y-0.5 transition-all w-full sm:w-auto"
               >
                 JOIN THE BROTHERHOOD <Leaf className="size-4" />
               </a>
               <a
-                href="/"
+                href={socialLinks.twitter}
+                target="_blank"
+                rel="noreferrer"
                 className="inline-flex min-w-[180px] items-center justify-center gap-2 px-5 py-3 font-display text-sm tracking-widest text-primary border-2 border-primary/70 rounded-md hover:bg-primary/10 transition-all w-full sm:w-auto"
               >
                 FOLLOW ON <svg viewBox="0 0 24 24" fill="currentColor" width={10} height={10} className="size-3 text-white" aria-hidden>
@@ -992,11 +1017,11 @@ function Footer() {
             FOLLOW THE BROTHERHOOD
           </div>
           <div className="mt-3 flex items-center gap-2">
-            <IconLink label="Twitter"><svg viewBox="0 0 24 24" fill="currentColor" width={32} height={32} className="size-4" aria-hidden>
+            <IconLink label="Twitter" href={socialLinks.twitter}><svg viewBox="0 0 24 24" fill="currentColor" width={32} height={32} className="size-4" aria-hidden>
   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L.826 2.25H7.85l4.708 6.257L18.244 2.25zm-1.165 18.75h1.833L7.169 4.126H5.166l11.913 16.874z" />
 </svg></IconLink>
-            <IconLink label="Discord"><DiscordIcon /></IconLink>
-            <IconLink label="OpenSea"><RobinIcon /></IconLink>
+            <IconLink label="Discord" href={socialLinks.discord}><DiscordIcon /></IconLink>
+            <IconLink label="OpenSea" href={socialLinks.opensea}><RobinIcon /></IconLink>
           </div>
         </div>
       </div>
