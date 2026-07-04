@@ -750,14 +750,7 @@ function Gallery() {
           ))}
         </div>
 
-        <div className="mt-6 flex md:hidden">
-          <a
-            href="/collection"
-            className="inline-flex items-center gap-1 font-display text-xs tracking-widest text-primary"
-          >
-            VIEW ALL <ArrowRight className="size-4" />
-          </a>
-        </div>
+        
       </div>
     </section>
   );
