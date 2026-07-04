@@ -1,11 +1,11 @@
 "use client";
 
-import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
+//import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { createFileRoute } from "@tanstack/react-router";
 import type { StaticImageData } from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatEther, type Address } from "viem";
-import { useAccount, useChainId, useReadContract, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+//import { useAccount, useChainId, useReadContract, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import {
   Menu,
   X,
@@ -35,17 +35,13 @@ import h5 from "@/assets/hoodie-5.jpg";
 import h6 from "@/assets/hoodie-6.jpg";
 import h7 from "@/assets/hoodie-7.jpg";
 import h8 from "@/assets/hoodie-8.jpg";
-import robinhood from "@/assets/robinhood.jpg";
+import robinhood from "@/assets/2221.png";
 import alan from "@/assets/alan.jpg";
-import sirHiss from "@/assets/sir_hiss.jpg";
+import sirHiss from "@/assets/98.png";
 import littleJohn from "@/assets/little_john.jpg";
-import Sword from "@/assets/sword.png";
-import King from "@/assets/king.png";
-import toby_tuck from "@/assets/toby_tuck.jpg";
-import sherriff from "@/assets/sherriff.jpg";
-import princeJohn from "@/assets/prince_john.jpg";
-import hero from "@/assets/hero.png";
-import { robinhoodTestnet } from "@/config/chains";
+import Sword from "@/assets/208.png";
+import King from "@/assets/2217.png";
+//import { robinhoodTestnet } from "@/config/chains";
 import { HOODIE_ABI, HOODIE_CONTRACT_ADDRESS } from "@/lib/contracts/hoodie";
 import { useToast } from "@/components/ui/toast-provider";
 import Particles from "@/components/particles";
@@ -65,10 +61,10 @@ const NAV = [
 ];
 
 const GALLERY = [
-  { src: robinhood, name: "#001", tag: "MOSS" },
-  { src: Sword, name: "#002", tag: "SUN" },
-  { src: sirHiss, name: "#003", tag: "VOID" },
-  { src: King, name: "#004", tag: "TIDE" }
+  { src: robinhood, name: "#2221", tag: "MOSS" },
+  { src: Sword, name: "#208", tag: "SUN" },
+  { src: sirHiss, name: "#98", tag: "VOID" },
+  { src: King, name: "#2217", tag: "TIDE" }
 ];
 
 function getFriendlyMintError(message: string) {
@@ -169,7 +165,7 @@ const truncateAddress = (address: string) => {
 
 
 function ConnectButton({ full }: { full?: boolean }) {
-  return (
+  /*return (
     <RainbowConnectButton.Custom>
       {({ account, chain, mounted, openConnectModal, openAccountModal }) => {
         const connected = mounted && !!account && !!chain;
@@ -198,7 +194,7 @@ function ConnectButton({ full }: { full?: boolean }) {
         );
       }}
     </RainbowConnectButton.Custom>
-  );
+  );*/
 }
 
 function LogoMark() {
@@ -297,7 +293,7 @@ function Hero() {
 
 /* ---------------- Stats ---------------- */
 function StatsStrip() {
-  const { data: totalSupplyData, isLoading: isTotalSupplyLoading } = useReadContract({
+  /*const { data: totalSupplyData, isLoading: isTotalSupplyLoading } = useReadContract({
     address: HOODIE_CONTRACT_ADDRESS,
     abi: HOODIE_ABI,
     functionName: "totalSupply",
@@ -316,7 +312,7 @@ function StatsStrip() {
   const totalSupply = Number((totalSupplyData as bigint | undefined) ?? BigInt(0));
   const maxSupply = Number((maxSupplyData as bigint | undefined) ?? BigInt(2222));
   const mintPriceBigInt = (mintPriceData as bigint | undefined) ?? BigInt(0);
-  const pricePerUnit = Number(formatEther(mintPriceBigInt));
+  const pricePerUnit = Number(formatEther(mintPriceBigInt));*/
 
   /*const items = [
     {
@@ -459,7 +455,7 @@ function FeaturedCard() {
 }
 
 function MintCard() {
-  const [qty, setQty] = useState(1);
+  /*const [qty, setQty] = useState(1);
   const { addToast } = useToast();
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -684,7 +680,7 @@ function MintCard() {
         Max {maxPerTx} per transaction • Max 10 per wallet
       </p>
     </article>
-  );
+  );*/
 }
 
 function GroupPanel() {
@@ -765,7 +761,7 @@ function GalleryCard({ src, name, tag }: { src: StaticImageData; name: string; t
         </span>
       </div>
       <div className="mt-2 flex items-center justify-between px-1 pb-1">
-        <span className="font-display text-xs">{name}</span>
+        <span className="font-display text-xs">HOODIE {name}</span>
       </div>
     </div>
   );
@@ -790,7 +786,7 @@ function About() {
           </p>
           <div className="mt-6 grid sm:grid-cols-3 gap-3">
             {[
-              { k: "2222", v: "SUPPLY" },
+              { k: "2,222", v: "SUPPLY" },
               { k: "300+", v: "TRAITS" },
               { k: "100%", v: "ON-CHAIN" },
             ].map((s) => (
@@ -873,26 +869,25 @@ function Roadmap() {
 
 /* ---------------- FAQ ---------------- */
 function FAQ() {
-  const items = [
+  const items = [ 
+    { 
+      q: "What is HOODIE?", 
+      a: "HOODIE is a collection of 2,222 hand-crafted jungle characters inspired by timeless tales of adventure, loyalty, and mischief. Built on Robinhood Chain, every NFT is uniquely generated from carefully illustrated traits and welcomes its holder into the Brotherhood.", 
+    }, 
+    { 
+      q: "How do I mint a HOODIE?", 
+      a: "Minting takes place through our official launch experience powered by OpenSea. Simply connect your wallet, choose the number of NFTs you'd like to mint, and approve the transaction. Live mint pricing and availability are displayed during the mint process.", 
+    }, 
+    { 
+      q: "Which blockchain is HOODIE on?", 
+      a: "HOODIE is deployed on Robinhood Chain. You can connect using any supported EVM-compatible wallet, including MetaMask, Rabby, Coinbase Wallet, and WalletConnect-compatible wallets.", 
+    }, 
+    { q: "Where can I buy or sell HOODIE NFTs?", 
+      a: "After minting, HOODIE NFTs can be viewed, bought, and traded on OpenSea, which serves as the official secondary marketplace for the collection. Our website remains the official hub for exploring the collection, discovering artwork, and following the HOODIE journey.", 
+    }, 
     {
-      q: "What is HOODIE?",
-      a: "HOODIE is a collection of 2,222 hand-crafted jungle characters inspired by timeless tales of adventure, loyalty, and mischief, minted on Robinhood Chain. Each NFT is uniquely generated from carefully illustrated traits and belongs to the ever-growing Brotherhood.",
-    },
-    {
-      q: "How much does it cost to mint?",
-      a: "The mint price is displayed live on the mint page and is read directly from the smart contract. Each wallet and transaction are subject to the current mint limits set by the collection.",
-    },
-    {
-      q: "Which blockchain is HOODIE on?",
-      a: "HOODIE is built on Robinhood Chain. You can connect using any supported EVM-compatible wallet, including MetaMask and WalletConnect-compatible wallets.",
-    },
-    {
-      q: "What do I get by owning a HOODIE?",
-      a: "Owning a HOODIE makes you part of the Brotherhood. You'll be able to build your collection, showcase your NFTs, and, once available, trade them on the official HOODIE Marketplace. Future community experiences and ecosystem features will be announced as the project grows.",
-    },
-    {
-      q: "Where is the artwork stored?",
-      a: "The artwork and metadata are stored on IPFS to ensure the collection remains decentralized and accessible. Once the collection is revealed, each NFT permanently points to its unique metadata and artwork.",
+      q: "What happens after I mint?",
+      a: "Once your transaction is confirmed, your HOODIE NFT will appear in your connected wallet and in your OpenSea profile. After the collection is revealed, you'll be able to view its unique artwork, traits, and metadata."
     },
   ];
   return (
@@ -948,7 +943,7 @@ function FAQItem({ q, a, defaultOpen }: { q: string; a: string; defaultOpen?: bo
 function Footer() {
   const [copied, setCopied] = useState(false);
   const address = HOODIE_CONTRACT_ADDRESS;
-  const explorerUrl = `${robinhoodTestnet.blockExplorers.default.url}/address/${HOODIE_CONTRACT_ADDRESS}`;
+  //const explorerUrl = `${robinhoodTestnet.blockExplorers.default.url}/address/${HOODIE_CONTRACT_ADDRESS}`;
   const onCopy = async () => {
     try {
       await navigator.clipboard.writeText(HOODIE_CONTRACT_ADDRESS);
@@ -989,14 +984,7 @@ function Footer() {
             <Copy className="size-3.5" />
             {copied && <span className="text-primary">copied</span>}
           </button>
-          <a
-            href={explorerUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-3 inline-flex items-center gap-2 px-4 py-2.5 font-display text-[11px] tracking-widest text-primary border-2 border-primary/70 rounded-md hover:bg-primary/10 transition-colors"
-          >
-            VIEW ON EXPLORER <ExternalLink className="size-3.5" />
-          </a>
+          
         </div>
 
         <div>

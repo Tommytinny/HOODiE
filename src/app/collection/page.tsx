@@ -3,16 +3,20 @@
 import Link from "next/link";
 import { ArrowLeft, Coins, Crown, Leaf, Search, Zap } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { formatEther } from "viem";
-import { usePublicClient, useReadContract } from "wagmi";
+import { createPublicClient, formatEther, http } from "viem";
 
+import { robinhoodTestnet } from "@/config/chains";
 import { HOODIE_ABI, HOODIE_CONTRACT_ADDRESS } from "@/lib/contracts/hoodie";
 import { fetchContractNftPage, type IndexedNft, type IndexedNftAttribute } from "@/lib/contract-nfts";
 import { Badge } from "@/components/ui/badge";
 
 const emptyImage =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='768' height='768' viewBox='0 0 768 768'%3E%3Crect width='768' height='768' fill='%23f0ead2'/%3E%3C/svg%3E";
+
+const publicClient = createPublicClient({
+  chain: robinhoodTestnet,
+  transport: http(process.env.NEXT_PUBLIC_RPC_URL || "https://rpc.testnet.robinhood.com"),
+});
 
 type Rarity = "common" | "rare" | "legendary";
 type SortOption = "newest" | "oldest" | "id-asc" | "id-desc" | "rarity";
@@ -85,88 +89,124 @@ export default function CollectionPage() {
   const [sortOrder, setSortOrder] = useState<SortOption>("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
-  const publicClient = usePublicClient();
-
-  const { data: totalSupplyData } = useReadContract({
-    address: HOODIE_CONTRACT_ADDRESS,
-    abi: HOODIE_ABI,
-    functionName: "totalSupply",
-    query: { refetchInterval: 25000 },
+  const [contractStats, setContractStats] = useState({
+    totalSupply: BigInt(0),
+    maxSupply: BigInt(0),
+    mintPrice: BigInt(0),
+    salePhase: 0,
+    revealed: false,
   });
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [statsError, setStatsError] = useState<string | null>(null);
+  const [collectionPages, setCollectionPages] = useState<Array<{ nfts: IndexedNft[]; nextCursor?: string }>>([]);
+  const [isCollectionLoading, setIsCollectionLoading] = useState(true);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
+  const [collectionQueryError, setCollectionQueryError] = useState<Error | null>(null);
 
-  const { data: maxSupplyData } = useReadContract({
-    address: HOODIE_CONTRACT_ADDRESS,
-    abi: HOODIE_ABI,
-    functionName: "maxSupply",
-    query: { refetchInterval: 25000 },
-  });
+  useEffect(() => {
+    let mounted = true;
+    setStatsLoading(true);
+    setStatsError(null);
 
-  const { data: mintPriceData, isLoading: isMintPriceLoading } = useReadContract({
-    address: HOODIE_CONTRACT_ADDRESS,
-    abi: HOODIE_ABI,
-    functionName: "mintPrice",
-    query: { refetchInterval: 25000 },
-  });
+    const loadStats = async () => {
+      try {
+        const [totalSupplyData, maxSupplyData, mintPriceData, salePhaseData, revealedData] = await Promise.all([
+          publicClient.readContract({ address: HOODIE_CONTRACT_ADDRESS, abi: HOODIE_ABI, functionName: "totalSupply" }),
+          publicClient.readContract({ address: HOODIE_CONTRACT_ADDRESS, abi: HOODIE_ABI, functionName: "maxSupply" }),
+          publicClient.readContract({ address: HOODIE_CONTRACT_ADDRESS, abi: HOODIE_ABI, functionName: "mintPrice" }),
+          publicClient.readContract({ address: HOODIE_CONTRACT_ADDRESS, abi: HOODIE_ABI, functionName: "salePhase" }),
+          publicClient.readContract({ address: HOODIE_CONTRACT_ADDRESS, abi: HOODIE_ABI, functionName: "revealed" }),
+        ]);
 
-  const { data: salePhaseData } = useReadContract({
-    address: HOODIE_CONTRACT_ADDRESS,
-    abi: HOODIE_ABI,
-    functionName: "salePhase",
-    query: { refetchInterval: 25000 },
-  });
+        if (!mounted) return;
+        setContractStats({
+          totalSupply: (totalSupplyData as bigint) ?? BigInt(0),
+          maxSupply: (maxSupplyData as bigint) ?? BigInt(0),
+          mintPrice: (mintPriceData as bigint) ?? BigInt(0),
+          salePhase: Number((salePhaseData as number | bigint | undefined) ?? 0),
+          revealed: Boolean(revealedData),
+        });
+      } catch (error) {
+        if (mounted) {
+          setStatsError(error instanceof Error ? error.message : "Could not load collection data.");
+        }
+      } finally {
+        if (mounted) setStatsLoading(false);
+      }
+    };
 
-  const { data: revealedData } = useReadContract({
-    address: HOODIE_CONTRACT_ADDRESS,
-    abi: HOODIE_ABI,
-    functionName: "revealed",
-    query: { refetchInterval: 25000 },
-  });
+    loadStats();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-  const totalSupply = Number((totalSupplyData as bigint | undefined) ?? BigInt(0));
-  const maxSupply = Number((maxSupplyData as bigint | undefined) ?? BigInt(0));
-  const salePhase = Number((salePhaseData as number | bigint | undefined) ?? 0);
-  const isRevealed = Boolean(revealedData);
+  const totalSupply = Number(contractStats.totalSupply);
+  const maxSupply = Number(contractStats.maxSupply);
+  const salePhase = contractStats.salePhase;
+  const isRevealed = contractStats.revealed;
 
-  const {
-    data: collectionPages,
-    error: collectionQueryError,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading: isCollectionLoading,
-  } = useInfiniteQuery({
-    queryKey: ["hoodie-nfts", HOODIE_CONTRACT_ADDRESS, "contract", totalSupply],
-    queryFn: ({ pageParam }) =>
-      fetchContractNftPage({ publicClient: publicClient!, totalSupply, cursor: pageParam }),
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-    enabled: totalSupply > 0 && Boolean(publicClient),
-    staleTime: 60000,
-    refetchInterval: 300000,
-  });
+  useEffect(() => {
+    let mounted = true;
 
-  const pricePerUnit = useMemo(() => {
-    if (mintPriceData === undefined) return 0;
-    return Number(formatEther(mintPriceData as bigint));
-  }, [mintPriceData]);
+    const loadCollectionPage = async (cursor?: string) => {
+      try {
+        if (!mounted) return;
+        setIsCollectionLoading(true);
+        setCollectionQueryError(null);
+        const page = await fetchContractNftPage({ publicClient, totalSupply, cursor });
+        if (!mounted) return;
+        setCollectionPages((current) => (cursor ? [...current, page] : [page]));
+        setHasNextPage(Boolean(page.nextCursor));
+      } catch (error) {
+        if (!mounted) return;
+        setCollectionQueryError(error instanceof Error ? error : new Error("Could not load collection NFTs."));
+      } finally {
+        if (mounted) setIsCollectionLoading(false);
+      }
+    };
+
+    if (totalSupply > 0) {
+      loadCollectionPage();
+    } else {
+      setCollectionPages([]);
+      setHasNextPage(false);
+      setIsCollectionLoading(false);
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [totalSupply]);
+
+  const pricePerUnit = useMemo(() => Number(formatEther(contractStats.mintPrice)), [contractStats.mintPrice]);
 
   useEffect(() => {
     const node = loadMoreRef.current;
     if (!node || !hasNextPage) return;
 
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting && !isFetchingNextPage) {
-        fetchNextPage();
+      if (entries[0]?.isIntersecting && !isFetchingNextPage && hasNextPage) {
+        setIsFetchingNextPage(true);
+        fetchContractNftPage({ publicClient, totalSupply, cursor: collectionPages.at(-1)?.nextCursor })
+          .then((page) => {
+            setCollectionPages((current) => [...current, page]);
+            setHasNextPage(Boolean(page.nextCursor));
+          })
+          .catch((error) => {
+            setCollectionQueryError(error instanceof Error ? error : new Error("Could not load collection NFTs."));
+          })
+          .finally(() => setIsFetchingNextPage(false));
       }
     });
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [collectionPages, hasNextPage, isFetchingNextPage, totalSupply]);
 
   const indexedNfts = useMemo(() => {
-    const pageNfts = collectionPages?.pages.flatMap((page) => page.nfts) ?? [];
-    return pageNfts.map(indexedNftToCard);
+    return collectionPages.flatMap((page) => page.nfts).map(indexedNftToCard);
   }, [collectionPages]);
 
   const visibleNFTs = useMemo(() => {
@@ -207,14 +247,9 @@ export default function CollectionPage() {
     }
   }, [indexedNfts, selectedRarity, searchQuery, sortOrder]);
 
-  const collectionError =
-    collectionQueryError instanceof Error
-      ? collectionQueryError.message
-      : collectionQueryError
-      ? "Could not load collection NFTs."
-      : "";
-  const maxSupplyLabel = maxSupplyData === undefined ? "..." : String(maxSupply);
-  const hasNoMintedNfts = totalSupply === 0 && !isCollectionLoading;
+  const collectionError = collectionQueryError?.message || (statsError ? statsError : "");
+  const maxSupplyLabel = statsLoading ? "..." : String(maxSupply);
+  const hasNoMintedNfts = totalSupply === 0 && !isCollectionLoading && !statsLoading;
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
@@ -242,7 +277,7 @@ export default function CollectionPage() {
         <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
           {[
             { icon: <Leaf className="size-5" />, label: "SUPPLY", value: `${totalSupply} / ${maxSupplyLabel}` },
-            { icon: <Coins className="size-5" />, label: "MINT PRICE", value: isMintPriceLoading ? "..." : `${pricePerUnit.toFixed(2)} ETH` },
+            { icon: <Coins className="size-5" />, label: "MINT PRICE", value: statsLoading ? "..." : `${pricePerUnit.toFixed(2)} ETH` },
             { icon: <Crown className="size-5" />, label: "REVEAL", value: isRevealed ? "LIVE" : "HIDDEN" },
             { icon: <Zap className="size-5" />, label: "STATUS", value: getCollectionStatus(salePhase) },
           ].map((item, index) => (
@@ -391,7 +426,7 @@ export default function CollectionPage() {
                 <div className="mt-4 text-left">
                   <div className="font-display text-[10px] tracking-[0.25em] text-muted-foreground">MINT PRICE</div>
                   <div className="mt-1 font-display text-sm text-primary">
-                    {isMintPriceLoading ? "..." : `${pricePerUnit.toFixed(2)} ETH`}
+                    {statsLoading ? "..." : `${pricePerUnit.toFixed(2)} ETH`}
                   </div>
                 </div>
               </div>

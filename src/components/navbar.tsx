@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import { Menu, X, Leaf, Wallet, XIcon } from "lucide-react";
-import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
-
-
+import { Menu, X, Leaf, XIcon } from "lucide-react";
 
 const NAV = [
   { label: "HOME", href: "#home" },
@@ -46,39 +43,6 @@ function RobinIcon() {
   );
 }
 
-function ConnectButton({ full }: { full?: boolean }) {
-  return (
-    <RainbowConnectButton.Custom>
-      {({ account, chain, mounted, openConnectModal, openAccountModal }) => {
-        const connected = mounted && !!account && !!chain;
-        const label = connected
-          ? account.displayName || `${account.address.slice(0, 6)}…${account.address.slice(-4)}`
-          : "CONNECT WALLET";
-
-        return (
-          <button
-            type="button"
-            onClick={() => {
-              if (connected) {
-                openAccountModal?.();
-              } else {
-                openConnectModal?.();
-              }
-            }}
-            className={`relative group inline-flex items-center justify-center gap-2 px-4 py-2.5 font-display text-xs tracking-widest bg-primary text-primary-foreground rounded-md border-2 border-ink shadow-[4px_4px_0_0_var(--ink)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_0_var(--ink)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_0_var(--ink)] transition-all ${
-              full ? "w-full" : ""
-            }`}
-          >
-            <span className="absolute -inset-0.5 rounded-md pulse-slime pointer-events-none" aria-hidden />
-            <Wallet className="size-4" />
-            {label}
-          </button>
-        );
-      }}
-    </RainbowConnectButton.Custom>
-  );
-}
-
 /* ---------------- Navbar ---------------- */
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -116,10 +80,10 @@ export default function Navbar() {
         </nav>
         <div className="hidden md:flex items-center gap-2">
           <a
-            href="#mint"
+            href="/collection"
             className="inline-flex min-w-[180px] items-center justify-center gap-2 px-5 py-3 font-display text-sm tracking-widest bg-primary text-primary-foreground rounded-md border-2 border-ink shadow-[5px_5px_0_0_#007017] hover:-translate-y-0.5 transition-all w-full sm:w-auto"
             >
-            JOIN THE BROTHERHOOD <Leaf className="size-4" />
+            VIEW COLLECTION <Leaf className="size-4" />
           </a>
         </div>
         <button
@@ -147,10 +111,10 @@ export default function Navbar() {
           </nav>
           <div className="mt-4">
             <a
-            href="#mint"
+            href="/collection"
             className="inline-flex min-w-[180px] items-center justify-center gap-2 px-5 py-3 font-display text-sm tracking-widest bg-primary text-primary-foreground rounded-md border-2 border-ink shadow-[5px_5px_0_0_#007017] hover:-translate-y-0.5 transition-all w-full sm:w-auto"
             >
-            JOIN THE BROTHERHOOD <Leaf className="size-4" />
+            VIEW COLLECTION <Leaf className="size-4" />
             </a>
           </div>
         </div>
