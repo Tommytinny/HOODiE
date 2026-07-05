@@ -247,7 +247,7 @@ function Hero() {
                 HOODS
               </span>
               <span className="block outline-comic tracking-wide mt-2">BOUND BY ONE</span>
-              <span className="block brush text-[2.75rem] sm:text-7xl md:text-[3.5rem] leading-none">
+              <span className="block brush text-4xl sm:text-7xl md:text-[3.5rem] leading-none">
                 BROTHERHOOD
               </span>
             </h1>
@@ -402,7 +402,7 @@ function StatsStrip() {
                 <div className="font-display text-[10px] tracking-widest text-muted-foreground">
                   {s.label}
                 </div>
-                <div className="font-display text-lg md:text-xl text-foreground truncate">
+                <div className="font-display text-sm md:text-xl text-foreground truncate">
                   {s.value}
                 </div>
               </div>
@@ -761,7 +761,7 @@ function GalleryCard({ src, name, tag }: { src: StaticImageData; name: string; t
   return (
     <div className="group relative panel p-2 overflow-hidden hover:-translate-y-1 transition-transform">
       <div className="relative rounded-md overflow-hidden border-2 border-ink aspect-square bg-secondary">
-        {!loaded && <div className="absolute inset-0 animate-pulse bg-secondary" />}
+        
         <img
           src={src.src}
           alt={`HOODIE ${name}`}
@@ -769,14 +769,10 @@ function GalleryCard({ src, name, tag }: { src: StaticImageData; name: string; t
           height={512}
           loading="lazy"
           onLoad={() => setLoaded(true)}
-          className={`w-full h-full object-cover transition-opacity duration-500 ${
-            loaded ? "opacity-100" : "opacity-0"
-          } group-hover:scale-105`}
+          className={`w-full h-full object-cover transition-opacity duration-500 group-hover:scale-105`}
         />
         <div className="absolute inset-0 halftone opacity-20 mix-blend-overlay pointer-events-none" />
-        <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 text-[9px] font-display tracking-widest bg-background/80 text-primary border border-primary/50 rounded">
-          {tag}
-        </span>
+        
       </div>
       <div className="mt-2 flex items-center justify-between px-1 pb-1">
         <span className="font-display text-xs">HOODIE {name}</span>
