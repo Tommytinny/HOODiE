@@ -116,7 +116,7 @@ export default function Navbar() {
             href="/collection"
             className="inline-flex min-w-[180px] items-center justify-center gap-2 px-5 py-3 font-display text-sm tracking-widest bg-primary text-primary-foreground rounded-md border-2 border-ink shadow-[5px_5px_0_0_#007017] hover:-translate-y-0.5 transition-all w-full sm:w-auto"
             >
-            VIEW COLLECTION <Leaf className="size-4" />
+            JOIN THE BROTHERHOOD <Leaf className="size-4" />
             </a>
           </div>
         </div>

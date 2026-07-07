@@ -793,7 +793,7 @@ function About() {
           </span>
           <h2 className="mt-4 font-brush brush text-4xl md:text-5xl">The Brotherhood</h2>
           <p className="mt-4 text-sm md:text-base text-foreground/85 leading-relaxed">
-            The HOODIE collection brings together 2,222 hand-crafted jungle characters, each with their own personality, colors, history, and unique traits. Inspired by legends of loyalty, courage, mischief, and adventure, every NFT represents a member of a thriving woodland society.
+            The HOODIE collection brings together 2,222 uniquely generated jungle characters, each with their own personality, colors, history, and unique traits. Inspired by legends of loyalty, courage, mischief, and adventure, every NFT represents a member of a thriving woodland society.
             Some are fearless leaders. Some are clever tricksters. Some protect the forest, while others seek to rule it. 
             <br/>Though every character has a different story, they all belong to the same world—a jungle where friendship, rivalry, and adventure shape every path.
             <br/>No two HOODIEs are exactly alike, but together they form one community, one collection, and one brotherhood.
