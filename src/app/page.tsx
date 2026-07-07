@@ -989,7 +989,7 @@ function Footer() {
         </div>
 
         <div>
-          <div className="font-display text-[10px] tracking-widest text-primary">CONTRACT</div>
+          {/*<div className="font-display text-[10px] tracking-widest text-primary">CONTRACT</div>
           <button
             onClick={onCopy}
             className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-md border-2 border-primary/40 bg-background/50 hover:bg-primary/10 transition-colors font-mono text-xs"
@@ -999,7 +999,7 @@ function Footer() {
             {copied && <span className="text-primary">copied</span>}
           </button>
           
-        </div>
+        </div>*/}
 
         <div>
           <div className="font-display text-[10px] tracking-widest text-primary">
@@ -1009,7 +1009,6 @@ function Footer() {
             <IconLink label="Twitter" href={socialLinks.twitter}><svg viewBox="0 0 24 24" fill="currentColor" width={32} height={32} className="size-4" aria-hidden>
   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L.826 2.25H7.85l4.708 6.257L18.244 2.25zm-1.165 18.75h1.833L7.169 4.126H5.166l11.913 16.874z" />
 </svg></IconLink>
-            <IconLink label="Discord" href={socialLinks.discord}><DiscordIcon /></IconLink>
             <IconLink label="OpenSea" href={socialLinks.opensea}><RobinIcon /></IconLink>
           </div>
         </div>
